@@ -13,6 +13,6 @@ defmodule Client do
 
   """
   def hello do
-    :world
+    Manager.Pubsub.subscribe(:test)
   end
 end

@@ -9,7 +9,7 @@ defmodule Manager.MixProject do
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
-      elixir: "~> 1.13",
+      elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
@@ -18,7 +18,8 @@ defmodule Manager.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger],
+      mod: {Manager.Application, []}
     ]
   end
 

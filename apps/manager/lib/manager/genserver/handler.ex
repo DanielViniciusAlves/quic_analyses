@@ -12,8 +12,8 @@ defmodule Manager.Handler do
   @spec init(config :: ConfigStruct.t()) :: {:ok, ConfigStruct.t()}
   def init(config) do
     Pubsub.subscribe(:manager)
-    Pubsub.broadcast(:client_manager, :init)
-    Pubsub.broadcast(:server_manager, :init)
+    Pubsub.broadcast(:client_api, {:init, config})
+    # Pubsub.broadcast(:server_api, :init)
     {:ok, config}
   end
 

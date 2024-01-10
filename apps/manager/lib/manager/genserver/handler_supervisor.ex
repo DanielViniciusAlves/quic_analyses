@@ -15,7 +15,7 @@ defmodule Manager.Genserver.HandlerSupervisor do
 
   @spec start_handler(config :: ConfigStruct.t()) :: :ok | {:error, String.t()}
   def start_handler(config) do
-    case DynamicSupervisor.start_child(__MODULE__, {Handler, [config]}) do
+    case DynamicSupervisor.start_child(__MODULE__, {Handler, config}) do
       {:ok, _pid} ->
         :ok
 

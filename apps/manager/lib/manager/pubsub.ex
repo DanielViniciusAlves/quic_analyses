@@ -14,7 +14,7 @@ defmodule Manager.Pubsub do
 
   def broadcast(topic, payload) do
     Registry.dispatch(EventBus, topic, fn entries ->
-      for {pid, _} <- entries, pid != Kernel.self(), do: GenServer.cast(pid, payload)
+      for {pid, _} <- entries, pid != Kernel.self(), do: send(pid, payload)
     end)
   end
 end

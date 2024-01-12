@@ -1,7 +1,7 @@
-defmodule Client.Supervisor do
+defmodule Client.Manager.Supervisor do
   use Supervisor
 
-  alias Client
+  alias Client.Manager, as: Manager
 
   def start_link(init_arg) do
     Supervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
@@ -10,7 +10,7 @@ defmodule Client.Supervisor do
   @impl true
   def init(_init_arg) do
     children = [
-      {Client, []}
+      {Manager, []}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

@@ -41,8 +41,8 @@ defmodule Manager do
 
     with :off <- config.status,
          :ok <- HandlerSupervisor.start_handler(config) do
-      Logger.info("Test Started !")
       set_status(:on)
+      Logger.info("Test Started !")
     else
       {:error, reason} ->
         Logger.critical("Error: starting handler.")
@@ -68,7 +68,7 @@ defmodule Manager do
   end
 
   @spec set_status(status :: :on | :off) :: ConfigStruct.t()
-  defp set_status(status) do
+  def set_status(status) do
     update_config(:status, status)
   end
 

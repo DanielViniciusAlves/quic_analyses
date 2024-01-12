@@ -1,12 +1,14 @@
 defmodule Client.Application do
   use Application
 
-  alias Client.Supervisor, as: Client
+  alias Client.Manager.Supervisor, as: ClientManagerSupervisor
+  alias Client.Genserver.Supervisor, as: ClientSupervisor
 
   @impl true
   def start(_type, _args) do
     children = [
-      Client
+      ClientManagerSupervisor,
+      ClientSupervisor
     ]
 
     opts = [strategy: :one_for_one, name: Client.Supervisor.Tree]

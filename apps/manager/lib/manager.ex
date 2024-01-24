@@ -67,6 +67,11 @@ defmodule Manager do
     end)
   end
 
+  @spec set_connection_type(integer) :: ConfigStruct.t()
+  def set_connection_type(type) when is_integer(type) do
+    update_config(:connection_type, type)
+  end
+
   @spec set_status(status :: :on | :off) :: ConfigStruct.t()
   def set_status(status) do
     update_config(:status, status)

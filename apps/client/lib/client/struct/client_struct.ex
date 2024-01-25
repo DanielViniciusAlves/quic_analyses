@@ -1,14 +1,14 @@
-defmodule Client.ClientStruct do
+defmodule Client.Struct.ClientStruct do
   defstruct [
-    :clients_number,
     :connection_duration,
-    {:status, :off}
+    :connection_type,
+    :id
   ]
 
   @type t() ::
           %__MODULE__{
-            clients_number: non_neg_integer(),
             connection_duration: non_neg_integer(),
-            status: :off | :on
+            connection_type: atom(),
+            id: non_neg_integer()
           }
 end

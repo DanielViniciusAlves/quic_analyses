@@ -1,7 +1,7 @@
 defmodule Client.Manager do
   use GenServer
 
-  alias Client.ClientStruct
+  alias Client.Struct.ClientManagerStruct
   alias Client.Genserver.Supervisor, as: ClientSupervisor
   alias Client.Error.ErrorHandler, as: Error
   alias Manager.ConfigStruct
@@ -17,21 +17,16 @@ defmodule Client.Manager do
   def init(_args) do
     Pubsub.subscribe(:client_api)
     Pubsub.subscribe(:client)
-    {:ok, %ClientStruct{}}
+    {:ok, %ClientManagerStruct{}}
   end
 
   @impl true
-  @spec handle_info({:init, config :: ConfigStruct.t()}, state :: ClientStruct.t()) ::
-          {:noreply, ClientStruct.t()}
+  @spec handle_info({:init, config :: ConfigStruct.t()}, state :: ClientManagerStruct.t()) ::
+          {:noreply, ClientManagerStruct.t()}
   def handle_info({:init, config}, state) do
     with info <- Map.merge(state, config),
-         :ok <- ClientSupervisor.start_clients(info.clients_number, info.connection_duration) do
+         :ok <- ClientSupervisor.start_clients(info) do
       Logger.info("Client is starting.")
-
-      Pubsub.broadcast(
-        :manager,
-        {:client_terminate, {:client_error, Error.exception(:client_init)}}
-      )
 
       {:noreply, info}
     else
@@ -50,8 +45,11 @@ defmodule Client.Manager do
   end
 
   @impl true
-  @spec handle_info({:client_stop, reason :: Error.t() | :completed}, state :: ClientStruct.t()) ::
-          {:noreply, ClientStruct.t()}
+  @spec handle_info(
+          {:client_stop, reason :: Error.t() | :completed},
+          state :: ClientManagerStruct.t()
+        ) ::
+          {:noreply, ClientManagerStruct.t()}
   def handle_info({:client_stop, reason}, state) do
     case reason do
       :completed ->

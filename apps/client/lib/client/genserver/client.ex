@@ -2,6 +2,7 @@ defmodule Client.Genserver.Client do
   use GenServer
 
   alias Client.Error.ErrorHandler, as: Error
+  alias Client.Connection.ConnectionHandler, as: Connection
   alias Manager.Pubsub
   require Logger
 
@@ -11,7 +12,9 @@ defmodule Client.Genserver.Client do
 
   @impl true
   def init(init_config) do
-    # Logger.info("Client Started")
+    Logger.info("Client Started")
+    Connection.start(init_config.connection_type)
+
     Pubsub.subscribe(:client)
     {:ok, init_config}
   end

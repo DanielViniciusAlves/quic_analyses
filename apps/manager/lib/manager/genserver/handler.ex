@@ -1,6 +1,7 @@
 defmodule Manager.Handler do
   use GenServer
 
+  require Logger
   alias Manager.Pubsub
   alias Manager.ConfigStruct
   alias Pubsub
@@ -20,24 +21,23 @@ defmodule Manager.Handler do
 
   @impl true
   def handle_info({:client_terminate, :completed}, state) do
-    turn_off()
-    {:noreply, state}
+    {:stop, :normal, state}
   end
 
   @impl true
-  def handle_info({:client_terminate, {:client_error, _reason}}, state) do
-    turn_off()
-    {:noreply, state}
+  def handle_info({:client_terminate, {:client_error, reason}}, state) do
+    Logger.info(reason.message)
+    {:stop, :normal, state}
   end
 
   @impl true
   def handle_info({:server_terminate, _reason}, state) do
-    {:noreply, state}
+    {:stop, :normal, state}
   end
 
-  @spec turn_off() :: :ok
-  defp turn_off() do
+  @impl true
+  @spec terminate(any(), state :: ConfigStruct.t()) :: any()
+  def terminate(_reason, _state) do
     Manager.set_status(:off)
-    :ok
   end
 end

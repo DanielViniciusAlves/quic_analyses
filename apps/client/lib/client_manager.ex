@@ -30,16 +30,16 @@ defmodule Client.Manager do
 
       {:noreply, info}
     else
+      {:error, reason} ->
+        Pubsub.broadcast(:manager, {:client_terminate, {:client_error, reason}})
+        {:noreply, state}
+
       _reason ->
         Pubsub.broadcast(
           :manager,
           {:client_terminate, {:client_error, Error.exception(:client_init)}}
         )
 
-        {:noreply, state}
-
-      {:error, reason} ->
-        Pubsub.broadcast(:manager, {:client_terminate, {:client_error, reason}})
         {:noreply, state}
     end
   end
@@ -66,7 +66,7 @@ defmodule Client.Manager do
         Logger.error(Error.exception(:invalid_run))
         Logger.error(reason)
 
-        Pubsub.broadcast(:manager, {:client_terminate, {:client_eror, reason}})
+        Pubsub.broadcast(:manager, {:client_terminate, {:client_error, reason}})
         Pubsub.broadcast(:client, {:stop, Error.exception(:invalid_run)})
 
         {:noreply, state}

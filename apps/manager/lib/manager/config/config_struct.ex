@@ -5,7 +5,7 @@ defmodule Manager.ConfigStruct do
             bandwidth_limit: nil,
             clients_number: 100,
             connection_duration: 10,
-            connection_type: :tcp,
+            connection_type: :quic,
             status: :off
 
   @type t() ::

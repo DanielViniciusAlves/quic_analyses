@@ -18,7 +18,7 @@ defmodule Client.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :ssl, :crypto],
       mod: {Client.Application, []}
     ]
   end
@@ -26,7 +26,8 @@ defmodule Client.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:manager, in_umbrella: true}
+      {:manager, in_umbrella: true},
+      {:quicer, github: "emqx/quic"}
     ]
   end
 end

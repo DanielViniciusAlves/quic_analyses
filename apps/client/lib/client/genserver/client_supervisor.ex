@@ -5,7 +5,6 @@ defmodule Client.Genserver.Supervisor do
   alias Client.Error.ErrorHandler, as: Error
   alias Client.Genserver.Client
   alias Client.Struct.ClientManagerStruct
-  alias Manager.Pubsub
 
   def start_link(init_arg) do
     DynamicSupervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
@@ -22,24 +21,28 @@ defmodule Client.Genserver.Supervisor do
       {:ok, _pid} ->
         :ok
 
-      _error ->
-        Pubsub.broadcast(:client, {:client_stop, Error.exception(:client_init)})
-        {:error, Error.exception(:client_init)}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
   # Callback
 
   @spec start_clients(ClientManagerStruct.t()) :: :ok | {:error, Error.t()}
-  def start_clients(config) do
-    Enum.each(0..config.clients_number, fn id ->
-      config = %ClientStruct{
-        connection_duration: config.connection_duration,
-        connection_type: config.connection_duration,
-        id: id
-      }
-
-      start_client(config)
-    end)
+  def start_clients(config) when config.clients_number >= 0 do
+    with :ok <-
+           %ClientStruct{
+             connection_duration: config.connection_duration,
+             connection_type: config.connection_type,
+             id: config.clients_number
+           }
+           |> start_client() do
+      start_clients(%{config | clients_number: config.clients_number - 1})
+    else
+      response ->
+        response
+    end
   end
+
+  def start_clients(_config), do: :ok
 end

@@ -13,10 +13,9 @@ defmodule Client.Genserver.Client do
   @impl true
   def init(init_config) do
     Logger.info("Client Started")
-    Connection.start(init_config.connection_type)
-
     Pubsub.subscribe(:client)
-    {:ok, init_config}
+
+    Connection.start(init_config)
   end
 
   @impl true

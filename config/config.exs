@@ -9,6 +9,10 @@
 # move said applications out of the umbrella.
 import Config
 
+config :server,
+  port: 4567,
+  host: ~c"localhost"
+
 # Sample configuration:
 #
 #     config :logger, :console,

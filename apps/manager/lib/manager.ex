@@ -67,6 +67,11 @@ defmodule Manager do
     end)
   end
 
+  @spec delay_netem_config(boolean) :: ConfigStruct.t()
+  def delay_netem_config(type) when is_boolean(type) do
+    update_config(:delay_netem_config, type)
+  end
+
   @spec set_connection_type(integer) :: ConfigStruct.t()
   def set_connection_type(type) when is_integer(type) do
     update_config(:connection_type, type)
@@ -107,8 +112,8 @@ defmodule Manager do
     update_config(:connection_duration, connection_duration)
   end
 
-  @spec update_config(atom, integer | :on | :off) :: ConfigStruct.t()
-  defp update_config(key, value) when is_integer(value) or is_atom(value) do
+  @spec update_config(atom, integer | :on | :off | boolean()) :: ConfigStruct.t()
+  defp update_config(key, value) when is_integer(value) or is_atom(value) or is_boolean(value) do
     Agent.update(Config, fn state ->
       Map.put(state, key, value)
     end)

@@ -10,7 +10,7 @@
 import Config
 
 config :server,
-  port: 4567,
+  port: 4568,
   host: ~c"localhost"
 
 # Sample configuration:

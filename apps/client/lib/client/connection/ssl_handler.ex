@@ -7,12 +7,24 @@ defmodule Client.Connection.SslHandler do
   def connect(state) do
     host = Application.get_env(:server, :host)
     port = Application.get_env(:server, :port)
+    dir = :code.priv_dir(:server)
 
     with {:ok, socket} <-
-           Ssl.connect(host, port, [:binary, active: true, verify: :verify_none], 5000) do
+           Ssl.connect(
+             host,
+             port,
+             [
+               :binary,
+               active: true,
+               verify: :verify_none,
+               cacertfile: Path.join([dir, "cert.pem"])
+             ],
+             5000
+           ) do
       {:ok, %{state | connection_handler: Client.Connection.SslHandler, socket: socket}}
     else
       response ->
+        Logger.info("Error in one of the Clients connections")
         IO.inspect(response)
         {:stop, Error.exception(:connection)}
     end
@@ -20,7 +32,7 @@ defmodule Client.Connection.SslHandler do
 
   @spec send(state :: map(), payload :: binary()) :: {:ok, state :: map()} | {:error, Error.t()}
   def send(state, payload) do
-    case Ssl.send(state.socket, payload) do
+    case(Ssl.send(state.socket, payload)) do
       :ok ->
         {:ok, state}
 

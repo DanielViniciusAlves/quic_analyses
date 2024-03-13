@@ -5,6 +5,7 @@ defmodule Client.Genserver.Supervisor do
   alias Client.Error.ErrorHandler, as: Error
   alias Client.Genserver.Client
   alias Client.Struct.ClientManagerStruct
+  require Logger
 
   def start_link(init_arg) do
     DynamicSupervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
@@ -22,6 +23,7 @@ defmodule Client.Genserver.Supervisor do
         :ok
 
       {:error, reason} ->
+        IO.inspect(reason)
         {:error, reason}
     end
   end
@@ -29,7 +31,7 @@ defmodule Client.Genserver.Supervisor do
   # Callback
 
   @spec start_clients(ClientManagerStruct.t()) :: :ok | {:error, Error.t()}
-  def start_clients(config) when config.clients_number >= 0 do
+  def start_clients(config) when config.clients_number > 0 do
     with :ok <-
            %ClientStruct{
              connection_duration: config.connection_duration,

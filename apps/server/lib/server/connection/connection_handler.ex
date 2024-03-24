@@ -1,4 +1,10 @@
 defmodule Server.Connection.Handler do
+  @moduledoc """
+  This module dispatches connection handling based on the provided connection type.
+
+  It aliases different connection handlers and provides a function to start the appropriate handler based on the connection type.
+
+  """
   alias Server.Error.ErrorHandler, as: Error
   alias Server.Struct.ServerManagerStruct
   alias Server.Connection.QuicHandler

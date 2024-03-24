@@ -1,6 +1,11 @@
 defmodule Manager.Handler do
-  use GenServer
+  @moduledoc """
+  Handles the network emulation process.
 
+  This module defines a GenServer to manage the network emulation process.
+  """
+
+  use GenServer
   require Logger
   alias Manager.ConfigStruct
   alias Manager.NetemConfig

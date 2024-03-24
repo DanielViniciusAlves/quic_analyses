@@ -1,4 +1,26 @@
 defmodule Server.Manager do
+  @moduledoc """
+  This module manages the server process and its interactions.
+
+  It handles the initialization of the server, processing of incoming messages, and termination signals.
+
+  ## Functions
+
+  - `start_link/1`: Starts the server manager process.
+    It initializes the GenServer process for managing the server.
+
+  - `init/1`: Initializes the server manager process.
+    It subscribes to relevant PubSub topics and initializes the server state.
+
+  - `handle_info/2`: Handles incoming asynchronous messages.
+    - `{:init, config}`: Initializes the server with the provided configuration.
+    - `{:finished, timer, counter}`: Handles the completion of server tasks.
+    - `:stop`: Handles termination signals.
+
+  - `write_data/3`: Writes data to a file.
+    It writes server-related data to a specified file path.
+
+  """
   use GenServer
 
   alias Server.Connection.Handler, as: Connection

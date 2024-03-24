@@ -1,4 +1,18 @@
 defmodule Client.Genserver.Supervisor do
+  @moduledoc """
+  This module manages the supervision of client GenServers within the system.
+
+  ## Usage
+
+  This supervisor starts and monitors individual client processes.
+
+  ## Functions
+
+  - `start_link/1`: Starts the supervisor.
+  - `init/1`: Initializes the supervisor.
+  - `start_client/1`: Starts a new client process.
+  - `start_clients/1`: Starts multiple client processes.
+  """
   use DynamicSupervisor
 
   alias Client.Error.ErrorHandler, as: Error

@@ -1,4 +1,10 @@
 defmodule Server.Genserver.Acceptor do
+  @moduledoc """
+  This module implements a GenServer for accepting connections.
+
+  It subscribes to relevant PubSub topics and handles incoming messages and casts.
+
+  """
   use GenServer, restart: :transient
 
   alias Manager.Pubsub

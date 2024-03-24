@@ -1,4 +1,7 @@
 defmodule Manager.Genserver.HandlerSupervisor do
+  @moduledoc """
+  Supervisor for managing the Handler GenServer.
+  """
   use DynamicSupervisor
 
   require Logger

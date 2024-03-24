@@ -1,6 +1,16 @@
 defmodule Client.Manager do
-  use GenServer
+  @moduledoc """
+  This module manages clients within the system using GenServer behavior to handle client management operations. It subscribes to relevant pubsub topics for client management events.
 
+  ## Functions
+
+  - `start_link/1`: Starts the client manager GenServer.
+  - `init/1`: Initializes the state of the client manager GenServer.
+  - `handle_info/2`: Handles incoming messages to the client manager GenServer.
+  - `start_test/1`: Starts the testing process based on provided configuration.
+  """
+
+  use GenServer
   alias Client.Genserver.Supervisor, as: ClientSupervisor
   alias Client.Error.ErrorHandler, as: Error
   alias Client.Struct.ClientManagerStruct

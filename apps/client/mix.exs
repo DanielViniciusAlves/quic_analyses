@@ -27,7 +27,8 @@ defmodule Client.MixProject do
   defp deps do
     [
       {:manager, in_umbrella: true},
-      {:quicer, github: "emqx/quic"}
+      {:quicer, github: "emqx/quic"},
+      {:ex_doc, "~> 0.31", only: :dev, runtime: false}
     ]
   end
 end

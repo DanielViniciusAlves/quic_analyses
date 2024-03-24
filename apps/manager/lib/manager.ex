@@ -1,33 +1,85 @@
 defmodule Manager do
   @moduledoc """
-    This module manages the configuration and lifecycle of the Manager system.
+  ## Manager Module
 
-    ## Usage
+  This module provides functionality for managing configurations and controlling a handler for a testing environment. It allows for starting and stopping the handler, as well as updating various configuration parameters.
 
-    - To start the Manager system, use `Manager.start/0`.
-    - To stop the Manager system, use `Manager.stop/0`.
+  ## Functions
 
-    ## Configuration
+  ### `start/0`
 
-    The configuration is stored in an Agent, allowing dynamic updates during runtime.
+  Starts the handler and sets the status to `:on` if it's currently `:off`. Logs informational messages for successful start and error messages if there are issues starting the handler or if it's already running.
 
-    ## Callbacks
+  ### `stop/0`
 
-    - `get_config/0`: Retrieve the current configuration.
-    - `set_delay/1`: Set the delay in the configuration.
-    - `set_loss/1`: Set the loss in the configuration.
-    - `set_corruption/1`: Set the corruption in the configuration.
-    - `set_bandwidth_limit/1`: Set the bandwidth limit in the configuration.
-    - `set_clients_number/1`: Set the number of clients in the configuration.
-    - `set_connection_duration/1`: Set the connection duration in the configuration.
+  Placeholder function to stop the handler. The actual implementation details for stopping the handler are not provided in the module and are expected to be handled elsewhere.
 
-    ## Starting the System
+  ## Callbacks
 
-    To start the system, use Manager.start/0. It retrieves the configuration, starts the HandlerSupervisor, and sets the status to :on.
-    Stopping the System
+  ### `get_config/0`
 
-    To stop the system, use Manager.stop/0. It performs the necessary actions to stop the system.
+  Retrieves the current configuration stored in the `Config` agent.
 
+  ### `delay_netem_config/1`
+
+  Updates the `delay_netem_config` value in the configuration.
+
+  ### `set_connection_type/1`
+
+  Updates the `connection_type` value in the configuration.
+
+  ### `set_status/1`
+
+  Updates the `status` value in the configuration.
+
+  ### `set_delay/1`
+
+  Updates the `delay` value in the configuration.
+
+  ### `set_loss/1`
+
+  Updates the `loss` value in the configuration.
+
+  ### `set_corruption/1`
+
+  Updates the `corruption` value in the configuration.
+
+  ### `set_bandwidth_limit/1`
+
+  Updates the `bandwidth_limit` value in the configuration.
+
+  ### `set_clients_number/1`
+
+  Updates the `clients_number` value in the configuration.
+
+  ### `set_connection_duration/1`
+
+  Updates the `connection_duration` value in the configuration.
+
+  ### `update_config/2`
+
+  Updates a specific configuration parameter with the given key-value pair.
+
+  ## Types
+
+  - `ConfigStruct.t()`: Represents the structure of the configuration data.
+  - `status :: :on | :off`: Represents the status of the handler, either `:on` or `:off`.
+  - `atom`: Represents a configuration parameter key.
+  - `integer`: Represents an integer value for configuration parameters.
+  - `boolean()`: Represents a boolean value for configuration parameters.
+
+  ## Usage
+
+  # Start the handler
+  Manager.start()
+
+  # Stop the handler
+  Manager.stop()
+
+  # Update configuration parameters
+  Manager.set_delay(100)
+  Manager.set_status(:on)
+  # etc.
   """
 
   alias Manager.ConfigStruct

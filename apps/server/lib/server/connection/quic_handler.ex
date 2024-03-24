@@ -1,4 +1,10 @@
 defmodule Server.Connection.QuicHandler do
+  @moduledoc """
+  Module responsible for handling QUIC connections.
+
+  This module implements functions to start a QUIC server, handle incoming connections,
+  and process messages from those connections.
+  """
   alias Server.Genserver.Supervisor, as: Acceptor
   alias Server.Error.ErrorHandler, as: Error
   alias Server.Struct.ServerManagerStruct
@@ -7,6 +13,17 @@ defmodule Server.Connection.QuicHandler do
   require Logger
 
   @spec start(state :: ServerManagerStruct.t()) :: :ok | {:stop, Error.t()}
+  @doc """
+  Starts the QUIC server.
+
+  It listens on the specified port and accepts incoming connections.
+
+  ## Parameters
+    - `state`: The initial server manager state.
+
+  ## Returns
+    - `:ok` if the server started successfully, or `{:stop, reason}` if an error occurred.
+  """
   def start(init_config) do
     port = Application.get_env(:server, :port)
     dir = :code.priv_dir(:server)
@@ -47,6 +64,15 @@ defmodule Server.Connection.QuicHandler do
 
   @spec handle_connection(state :: map()) ::
           {:noreply, state :: map()} | {:stop, :normal, {:error, any()}}
+  @doc """
+  Handles an incoming QUIC connection.
+
+  ## Parameters
+    - `state`: The current state of the connection.
+
+  ## Returns
+    - `{:noreply, state}` if the connection is handled successfully, or `{:stop, :normal, {:error, reason}}` if an error occurs.
+  """
   def handle_connection(state) do
     Quic.setopt(state.socket, :active, true)
 
@@ -62,6 +88,16 @@ defmodule Server.Connection.QuicHandler do
 
   @spec handle_message({:quic, message :: any(), stm :: any(), props :: any()}, state :: map()) ::
           {:noreply, state :: map()} | {:stop, :normal, {:error, any()}}
+  @doc """
+  Handles messages received from QUIC connections.
+
+  ## Parameters
+    - `{:quic, message, stm, props}`: A tuple containing the message, stream, and properties.
+    - `state`: The current state of the connection.
+
+  ## Returns
+    - `{:noreply, state}` if the message is handled successfully.
+  """
   def handle_message({:quic, message, _stm, _props}, state) do
     cond do
       message |> is_atom && message == :closed ->

@@ -11,18 +11,17 @@ Este projeto visa fornecer uma ferramenta de análise para o protocolo QUIC, imp
 
 Para executar o projeto, siga estas etapas:
 
-    1. Inicie o shell interativo do Elixir com o projeto carregado:
+1. Inicie o shell interativo do Elixir com o projeto carregado:
 
-    ```
-    iex -S mix
+```
+iex -S mix
+```
 
-    ```
-    
-    2. Dentro do shell do Elixir, inicie o gerenciador:
+2. Dentro do shell do Elixir, inicie o gerenciador:
 
-    ```
-    Manager.start
-    ```
+```
+Manager.start
+```
 
 ## Relatório
 

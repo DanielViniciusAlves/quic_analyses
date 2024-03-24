@@ -1,9 +1,6 @@
 defmodule Server.Genserver.Acceptor do
   use GenServer, restart: :transient
 
-  alias Client.Genserver
-  alias Server.Error.ErrorHandler, as: Error
-  alias Server.Connection.ConnectionHandler, as: Connection
   alias Manager.Pubsub
   require Logger
 
@@ -42,7 +39,7 @@ defmodule Server.Genserver.Acceptor do
   end
 
   @impl true
-  def terminate(test, reason) do
+  def terminate(_info, reason) do
     case reason do
       :error ->
         Pubsub.broadcast(:server, {:error, reason})

@@ -2,8 +2,9 @@ defmodule Manager.Handler do
   use GenServer
 
   require Logger
-  alias Manager.Pubsub
   alias Manager.ConfigStruct
+  alias Manager.NetemConfig
+  alias Manager.Pubsub
   alias Pubsub
 
   def start_link(config) do
@@ -13,7 +14,7 @@ defmodule Manager.Handler do
   @impl true
   @spec init(config :: ConfigStruct.t()) :: {:ok, ConfigStruct.t()}
   def init(config) do
-    Logger.info("Starting")
+    Logger.info("Starting test.")
     Pubsub.subscribe(:manager)
     Pubsub.broadcast(:server_api, {:init, config})
     {:ok, config}
@@ -27,37 +28,38 @@ defmodule Manager.Handler do
 
   @impl true
   def handle_info({:client_terminate, :completed}, state) do
-    Logger.info("Completed!!!")
+    Logger.info("Client finished sending data.")
     {:noreply, state}
   end
 
   @impl true
   def handle_info({:client_terminate, {:client_error, reason}}, state) do
-    Logger.info(reason.message)
+    Logger.error(reason)
     {:stop, :normal, state}
   end
 
   @impl true
-  def handle_info({:server_terminate, _reason}, state) do
-    Logger.info("Server Completed!!!")
+  def handle_info({:server_terminate, reason}, state) do
+    Logger.info("Server finished all connections.")
+
+    case reason do
+      {:error, reason} ->
+        Logger.error(reason)
+
+      _other ->
+        true
+    end
+
     {:stop, :normal, state}
   end
 
   @impl true
   @spec terminate(any(), state :: ConfigStruct.t()) :: any()
-# add timeout to start the config
   def terminate(_reason, _state) do
-    Logger.info ("Test Completed")
-    Pubsub.broadcast(:server_api, :stop)
-    Pubsub.broadcast(:client_api, :stop)
+    Pubsub.broadcast(:server_api, {:stop, :finished})
+    Pubsub.broadcast(:client_api, {:stop, :finished})
     Manager.set_status(:off)
-    cleanup_ambient()
-  end
-
-  defp cleanup_ambient() do
-    cmd = "tc"
-    args = ["qdisc", "del", "dev", "lo", "root"]
-
-    System.cmd(cmd, args)
+    NetemConfig.cleanup_ambient()
+    Logger.info("Test finished!")
   end
 end

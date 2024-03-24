@@ -1,16 +1,18 @@
 defmodule Client.Connection.SslHandler do
   alias Client.Error.ErrorHandler, as: Error
+  alias Client.Struct.ClientStruct
   alias :ssl, as: Ssl
   require Logger
 
-  @spec connect(state :: map()) :: {:ok, state :: map()} | {:stop, Error.t()}
+  @spec connect(state :: ClientStruct.t()) ::
+          {:ok, state :: ClientStruct.t()} | {:stop, Error.t()}
   def connect(state) do
     host = Application.get_env(:server, :host)
     port = Application.get_env(:server, :port)
     dir = :code.priv_dir(:server)
 
     with {:ok, socket} <-
-           Ssl.connect(
+           :ssl.connect(
              host,
              port,
              [
@@ -24,28 +26,26 @@ defmodule Client.Connection.SslHandler do
       {:ok, %{state | connection_handler: Client.Connection.SslHandler, socket: socket}}
     else
       response ->
-        Logger.info("Error in one of the Clients connections")
-        IO.inspect(response)
-        {:stop, Error.exception(:connection)}
+        {:error, Error.exception(:connection, response)}
     end
   end
 
-  @spec send(state :: map(), payload :: binary()) :: {:ok, state :: map()} | {:error, Error.t()}
+  @spec send(state :: ClientStruct.t(), payload :: binary()) ::
+          {:ok, state :: ClientStruct.t()} | {:error, Error.t()}
   def send(state, payload) do
     case(Ssl.send(state.socket, payload)) do
       :ok ->
         {:ok, state}
 
-      {:error, reason} ->
-        Logger.error(reason)
+      {:error, _reason} ->
         {:error, Error.exception(:send)}
     end
   end
 
-  @spec handle_connection(message :: any(), state :: map()) ::
-          {:ok, state :: map()} | {:error, Error.t()}
-  def handle_connection(message, state) do
-    IO.inspect(message)
+  @spec handle_connection(message :: any(), state :: ClientStruct.t()) ::
+          {:ok, state :: ClientStruct.t()} | {:error, Error.t()}
+  def handle_connection(_message, state) do
+    # IO.inspect(message)
     {:ok, state}
   end
 end

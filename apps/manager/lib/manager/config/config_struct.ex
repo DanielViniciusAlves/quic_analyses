@@ -5,7 +5,7 @@ defmodule Manager.ConfigStruct do
             bandwidth_limit: 0,
             clients_number: 100,
             connection_duration: 10,
-            connection_type: :quic,
+            connection_type: :tcp,
             status: :off,
             delay_netem_config: true
 

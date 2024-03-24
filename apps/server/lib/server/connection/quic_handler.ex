@@ -1,11 +1,12 @@
 defmodule Server.Connection.QuicHandler do
   alias Server.Genserver.Supervisor, as: Acceptor
-  alias Client.Error.ErrorHandler, as: Error
+  alias Server.Error.ErrorHandler, as: Error
+  alias Server.Struct.ServerManagerStruct
   alias :quicer, as: Quic
   alias Manager.Pubsub
   require Logger
 
-  # @spec connect(state :: map()) :: {:ok, state :: map()} | {:stop, Error.t()}
+  @spec start(state :: ServerManagerStruct.t()) :: :ok | {:stop, Error.t()}
   def start(init_config) do
     port = Application.get_env(:server, :port)
     dir = :code.priv_dir(:server)
@@ -21,66 +22,62 @@ defmodule Server.Connection.QuicHandler do
            Quic.listen(port, options) do
       accept_loop(init_config.clients_number, socket, 0)
     else
-      _response ->
-        {:stop, :connection}
+      {:error, reason} ->
+        {:error, Error.exception(:connection, reason)}
     end
   end
 
+  @spec accept_loop(clients_number :: integer(), socket :: any(), counter :: integer()) :: :ok
   defp accept_loop(clients_number, socket, counter) when counter < clients_number do
-    Acceptor.start_acceptor(%{
-      connection_handler: Server.Connection.QuicHandler,
-      socket: socket
-    })
+    case Acceptor.start_acceptor(%{
+           connection_handler: Server.Connection.QuicHandler,
+           socket: socket
+         }) do
+      {:error, reason} ->
+        {:error, reason}
 
-    accept_loop(clients_number, socket, counter + 1)
+      :ok ->
+        accept_loop(clients_number, socket, counter + 1)
+    end
   end
 
   defp accept_loop(_clients_number, _socket, _counter) do
     :ok
   end
 
-  # @spec handle_connection(message :: any(), state :: map()) ::
-  #         {:ok, state :: map()} | {:error, Error.t()}
+  @spec handle_connection(state :: map()) ::
+          {:noreply, state :: map()} | {:stop, :normal, {:error, any()}}
   def handle_connection(state) do
     Quic.setopt(state.socket, :active, true)
 
-    case Quic.accept(state.socket, []) do
-      {:ok, accept_socket} ->
-        {:ok, socket} = Quic.handshake(accept_socket, :infinity)
-        {:ok, socket} = Quic.accept_stream(socket, [])
-
-        {:noreply, %{state | socket: socket}}
-
-      response ->
-        IO.inspect(response)
-
-        {:error, response}
+    with {:ok, socket} <- Quic.accept(state.socket, []),
+         {:ok, socket} <- Quic.handshake(socket, :infinity),
+         {:ok, socket} <- Quic.accept_stream(socket, []) do
+      {:noreply, %{state | socket: socket}}
+    else
+      {:error, reason} ->
+        {:stop, :normal, {:error, reason}}
     end
   end
 
-  def handle_message({:quic, message, stm, _props}, state) do
+  @spec handle_message({:quic, message :: any(), stm :: any(), props :: any()}, state :: map()) ::
+          {:noreply, state :: map()} | {:stop, :normal, {:error, any()}}
+  def handle_message({:quic, message, _stm, _props}, state) do
     cond do
-      message |> is_atom ->
+      message |> is_atom && message == :closed ->
         Pubsub.broadcast(:server, {:finished, state.timer, state.counter})
-        Logger.info("Audio end")
-        {:stop, :normal, :test}
+        {:stop, :normal, :finished}
 
       true ->
-        IO.inspect(message)
         {:noreply, Map.put(state, :counter, Map.get(state, :counter, 0) + 1)}
     end
   end
 
-  def handle_message(message, state) do
+  @spec handle_message(message :: any(), state :: map()) :: {:noreply, state :: map()}
+  def handle_message(_message, state) do
     IO.inspect(:message)
     # IO.inspect(message)
 
     {:noreply, state}
-  end
-
-  def verify(a, b, c) do
-    IO.inspect(a)
-    IO.inspect(b)
-    IO.inspect(c)
   end
 end

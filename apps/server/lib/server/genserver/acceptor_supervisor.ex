@@ -1,8 +1,8 @@
 defmodule Server.Genserver.Supervisor do
   use DynamicSupervisor
 
-  alias Server.Struct.ServerStruct
   alias Server.Error.ErrorHandler, as: Error
+  alias Server.Struct.ServerStruct
   alias Server.Genserver.Acceptor
 
   def start_link(init_arg) do
@@ -17,11 +17,11 @@ defmodule Server.Genserver.Supervisor do
   @spec start_acceptor(ServerStruct.t()) :: :ok | {:error, Error.t()}
   def start_acceptor(connection) do
     case DynamicSupervisor.start_child(__MODULE__, {Acceptor, connection}) do
-      {:ok, pid} ->
-        pid
+      {:ok, _pid} ->
+        :ok
 
       {:error, reason} ->
-        {:error, reason}
+        {:error, Error.exception(:unknown, reason)}
     end
   end
 end

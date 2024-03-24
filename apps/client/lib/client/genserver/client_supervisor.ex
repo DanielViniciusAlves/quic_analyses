@@ -1,10 +1,10 @@
 defmodule Client.Genserver.Supervisor do
   use DynamicSupervisor
 
-  alias Client.Struct.ClientStruct
   alias Client.Error.ErrorHandler, as: Error
+  alias Client.Struct.ClientStruct
   alias Client.Genserver.Client
-  alias Client.Struct.ClientManagerStruct
+  alias Manager.ConfigStruct
   require Logger
 
   def start_link(init_arg) do
@@ -23,14 +23,13 @@ defmodule Client.Genserver.Supervisor do
         :ok
 
       {:error, reason} ->
-        IO.inspect(reason)
         {:error, reason}
     end
   end
 
   # Callback
 
-  @spec start_clients(ClientManagerStruct.t()) :: :ok | {:error, Error.t()}
+  @spec start_clients(ConfigStruct.t()) :: :ok | {:error, Error.t()}
   def start_clients(config) when config.clients_number > 0 do
     with :ok <-
            %ClientStruct{

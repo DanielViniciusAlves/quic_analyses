@@ -1,9 +1,11 @@
 defmodule Client.Connection.QuicHandler do
   alias Client.Error.ErrorHandler, as: Error
+  alias Client.Struct.ClientStruct
   alias :quicer, as: Quic
   require Logger
 
-  @spec connect(state :: map()) :: {:ok, state :: map()} | {:stop, Error.t()}
+  @spec connect(state :: ClientStruct.t()) ::
+          {:ok, state :: ClientStruct.t()} | {:error, Error.t()}
   def connect(state) do
     host = Application.get_env(:server, :host)
     port = Application.get_env(:server, :port)
@@ -11,31 +13,28 @@ defmodule Client.Connection.QuicHandler do
     with {:ok, conn} <-
            Quic.connect(host, port, [{:alpn, [~c"sample"]}, {:verify, :none}], :infinity),
          {:ok, stm} <- Quic.start_stream(conn, []) do
-      # :ok <- Quic.handoff_stream(stm, Kernel.self()) do
       {:ok, %{state | connection_handler: Client.Connection.QuicHandler, socket: stm}}
     else
       response ->
-        IO.puts("Error")
-        IO.inspect(response)
-        {:stop, Error.exception(:connection)}
+        {:error, Error.exception(:connection, response)}
     end
   end
 
-  @spec send(state :: map(), payload :: binary()) :: {:ok, state :: map()} | {:error, Error.t()}
+  @spec send(state :: ClientStruct.t(), payload :: binary()) ::
+          {:ok, state :: ClientStruct.t()} | {:error, Error.t()}
   def send(state, payload) do
     case Quic.send(state.socket, payload) do
-      {:ok, res} ->
+      {:ok, _other} ->
         {:ok, state}
 
-      {:error, reason} ->
-        Logger.error(reason)
+      _error ->
         {:error, Error.exception(:send)}
     end
   end
 
-  @spec handle_connection(message :: any(), state :: map()) ::
-          {:ok, state :: map()} | {:error, Error.t()}
-  def handle_connection(message, state) do
+  @spec handle_connection(message :: any(), state :: ClientStruct.t()) ::
+          {:ok, state :: ClientStruct.t()} | {:error, Error.t()}
+  def handle_connection(_message, state) do
     # IO.inspect(:client_message)
     # IO.inspect(message)
     {:ok, state}

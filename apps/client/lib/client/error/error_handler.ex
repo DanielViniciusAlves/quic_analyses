@@ -1,4 +1,24 @@
 defmodule Client.Error.ErrorHandler do
+  @moduledoc """
+  This module defines custom error handling for the client system.
+
+  ## Types
+
+  - `t()`: Represents an error with a message, type, and reason.
+
+  ## Functions
+
+  - `exception/2`: Constructs an exception with the given value and reason.
+
+  ## Exceptions
+
+  This module defines the following exceptions:
+
+  - `:client_init`: Error encountered while starting the client.
+  - `:invalid_run`: Invalid test, stopping all clients.
+  - `:connection`: Error encountered while starting connection with the server.
+  - `:unknown`: Unknown error.
+  """
   defexception [:message, :type, :reason]
 
   @type t() :: %__MODULE__{

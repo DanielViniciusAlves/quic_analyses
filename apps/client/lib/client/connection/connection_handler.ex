@@ -1,4 +1,17 @@
 defmodule Client.Connection.ConnectionHandler do
+  @moduledoc """
+  This module handles different types of connections for the client.
+
+  ## Functions
+
+  - `start/1`: Starts the specified type of connection.
+
+  ## Aliases
+
+  - `ErrorHandler`: Alias for the error handler module.
+  - `QuicHandler`: Alias for the QUIC connection handler module.
+  - `SslHandler`: Alias for the SSL connection handler module.
+  """
   alias Client.Error.ErrorHandler, as: Error
   alias Client.Connection.QuicHandler
   alias Client.Connection.SslHandler

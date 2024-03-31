@@ -1,4 +1,19 @@
 defmodule Client.Genserver.Client do
+  @moduledoc """
+  This GenServer module represents a client within the system.
+
+  ## Usage
+
+  Clients are started and managed by this GenServer. It handles client initialization,
+  incoming messages, and termination.
+
+  ## Functions
+
+  - `start_link/1`: Starts the client GenServer.
+  - `init/1`: Initializes the client GenServer.
+  - `handle_info/2`: Handles incoming messages to the client GenServer.
+  - `terminate/2`: Handles termination of the client GenServer.
+  """
   use GenServer, restart: :transient
 
   alias Client.Connection.ConnectionHandler, as: Connection

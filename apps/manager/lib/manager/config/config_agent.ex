@@ -1,4 +1,10 @@
 defmodule Manager.Config do
+  @moduledoc """
+  This module provides functionality for managing configuration using an Agent.
+
+  The configuration is stored as a struct defined in Manager.ConfigStruct module.
+  """
+
   use Agent
 
   alias Manager.ConfigStruct, as: Config

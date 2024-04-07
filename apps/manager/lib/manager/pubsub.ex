@@ -48,4 +48,3 @@ defmodule Manager.Pubsub do
     end)
   end
 end
-

@@ -27,7 +27,7 @@ defmodule Client.Manager do
   @impl true
   def init(_args) do
     Pubsub.subscribe(:client_api)
-    Pubsub.subscribe(:client)
+    #    Pubsub.subscribe(:client)
     {:ok, %ClientManagerStruct{}}
   end
 

@@ -124,8 +124,8 @@ defmodule Manager do
     update_config(:delay_netem_config, type)
   end
 
-  @spec set_connection_type(integer) :: ConfigStruct.t()
-  def set_connection_type(type) when is_integer(type) do
+  @spec set_connection_type(atom) :: ConfigStruct.t()
+  def set_connection_type(type) when is_atom(type) do
     update_config(:connection_type, type)
   end
 
